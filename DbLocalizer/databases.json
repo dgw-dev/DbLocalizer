@@ -4,7 +4,7 @@
       "Name": "LocalizationTest",
       "ConnectionStringName": "LocalizationTest",
       "SourceLocale": "en-US",
-      "CultureTableSuffix": "Culture",
+      "LocalizedTableSuffix": "Localized",
       "TableExclusions": [
         "__EFMigrationsHistory",
         "__RefactorLog",

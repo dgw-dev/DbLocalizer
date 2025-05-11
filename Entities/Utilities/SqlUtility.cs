@@ -9,7 +9,7 @@ namespace Entities.Utilities
 {
     public class SqlUtility
     {
-        private static string _cultureTableSuffix = string.Empty;
+        private static string _localizedTableSuffix = string.Empty;
         public string ExportLookbackInDays { get; set; }
         public List<string> ExclusionList { get; set; }
         public DataTable BaseTables { get; set; }
@@ -31,7 +31,7 @@ namespace Entities.Utilities
 
         public SqlUtility(Database database)
         {
-            _cultureTableSuffix = database.CultureTableSuffix;
+            _localizedTableSuffix = database.LocalizedTableSuffix;
 
             if (database.TableExclusions != null && database.TableExclusions.Count > 0)
             {
@@ -98,10 +98,10 @@ namespace Entities.Utilities
                 tablesToExclude = " AND SC1.TABLE_NAME NOT IN (" + exclusionList + ")";
             }
 
-            if (!string.IsNullOrEmpty(_cultureTableSuffix))
+            if (!string.IsNullOrEmpty(_localizedTableSuffix))
             {
-                fullCultureTableName = "MIN(QUOTENAME(TABLE_SCHEMA) + '.' + QUOTENAME(TABLE_NAME + '" + _cultureTableSuffix + "')) AS 'FullCultureTableName',";
-                cultureTable = " AND SC1.TABLE_NAME NOT LIKE '%" + _cultureTableSuffix + "%'";
+                fullCultureTableName = "MIN(QUOTENAME(TABLE_SCHEMA) + '.' + QUOTENAME(TABLE_NAME + '" + _localizedTableSuffix + "')) AS 'FullCultureTableName',";
+                cultureTable = " AND SC1.TABLE_NAME NOT LIKE '%" + _localizedTableSuffix + "%'";
             }
 
             return string.Format(_sqlGetAllTables, fullCultureTableName, tablesToExclude, cultureTable);
