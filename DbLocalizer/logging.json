@@ -1,0 +1,50 @@
+{
+  "Logging": {
+    "CustomLogger": {
+      "LogLevel": {
+        "Critical": "Critical",
+        "Debug": "Debug",
+        "Error": "Error",
+        "Information": "Information",
+        "None": "None",
+        "Trace": "Trace",
+        "Warning": "Warning"
+      },
+      "Sql": {
+        "ConnectionString": "server=AZG5QATSQL901.custadds.com;database=DbLocalizer;uid=wbpoc;pwd=sql@tfs2008",
+        "LoggingTableName": "LogTable",
+        "LoggingMessageFieldName": "Message",
+        "CustomFields": [
+          {
+            "Field": {
+              "CustomFieldName": "ProcessId",
+              "FieldIndex": 0,
+              "DataType": "Guid"
+            }
+          },
+          {
+            "Field": {
+              "CustomFieldName": "PackageId",
+              "FieldIndex": 1,
+              "DataType": "Guid"
+            }
+          },
+          {
+            "Field": {
+              "CustomFieldName": "LastModifiedTimestamp",
+              "FieldIndex": 2,
+              "DataType": "DateTime"
+            }
+          },
+          {
+            "Field": {
+              "CustomFieldName": "CancelOperation",
+              "FieldIndex": 3,
+              "DataType": "boolean"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

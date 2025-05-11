@@ -1,0 +1,35 @@
+{
+  "SmartlingEndPoints": {
+    "ServiceBaseUri": "https://localhost:44310",
+    "ExportAPI": "/files-api/v2/projects/<PROJECTID>/file",
+    "ImportAPI": "/v1/file/get",
+    "JobApi": "/jobs-api/v3/projects/<PROJECTID>/jobs",
+    "JobBatchAPI": "/job-batches-api/v2/projects/<PROJECTID>/batches",
+    "PeopleAPI": "/people-api/v2/users",
+    "AuthenticateAPI": "/auth-api/v2/authenticate",
+    "DownloadFile": "/files-api/v2/projects/<PROJECTID>/locales",
+    "FileStatus": "/files-api/v2/projects/<PROJECTID>/file/status"
+  },
+  "SmartlingAuthorization": {
+    "userIdentifier": "<USERID>",
+    "userSecret": "<USERSECRET>",
+    "AutoAuthorize": "false"
+  },
+  "SmartlingWorkflowUid": "<WORKFLOWID>",
+  "smartling": {
+    "entity_escaping": "true",
+    "variants_enabled": "true",
+    "translate_paths": [
+      {
+        "path": "*/Source/Text",
+        "key": [
+          "*/Source/BaseTable/",
+          "*/Source/Column/"
+        ],
+        "character_limit": "*/Source/MaxLength"
+      }
+    ]
+  },
+  "DbLocalizerExportEndPoint": "https://localhost:44310/api/SmartlingExport",
+  "DbLocalizerImportEndPoint": "https://localhost:44310/api/SmartlingImport"
+}

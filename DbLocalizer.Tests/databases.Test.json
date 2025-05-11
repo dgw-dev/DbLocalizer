@@ -1,0 +1,42 @@
+{
+  "DatabaseCollection": [
+    {
+      "Name": "LocalizationTest",
+      "ConnectionStringName": "LocalizationTest",
+      "SourceLocale": "en-US",
+      "CultureTableSuffix": "Culture",
+      "TableExclusions": [
+        "__EFMigrationsHistory",
+        "__RefactorLog",
+        "AspNetRoleClaims",
+        "AspNetRoles",
+        "AspNetUserClaims",
+        "AspNetUserLogins",
+        "AspNetUserRoles",
+        "AspNetUsers",
+        "AspNetUserTokens"
+      ],
+      "ExportDataTypes": [
+        "nvarchar",
+        "varchar",
+        "nchar",
+        "char",
+        "text",
+        "ntext"
+      ],
+      "ColumnExclusions": [
+
+      ],
+      "TableLevelExclusions": {
+        "DbTable": [
+          {
+            "FullTableName": "[dbo].[Products]",
+            "ColumnExclusions": [
+              "InternalRefCode"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
