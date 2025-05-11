@@ -6,7 +6,7 @@ This project is for developers and organizations looking for a simple way to exp
 This is a .NET Core Web API application, with the option to add a UI of your choice, either through MVC or a static UI in the wwwroot. The advantage of making the app a service is that it can then be integrated into business processes, allowing user interaction and extensibility. It will also support automation through scheduled jobs. 
 
 # Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
+The example setup makes some assumptions about the schema design of the target SQL Server Database. It assumes that there will be seperate tables for localizable data, specificaslly, for any "base" table there will be a corresponding "localized" table. e.g [dbo].[Products] and [dbo].[ProductsLocalized] that share a common key relationship.
 1.	Installation process
 2.	Software dependencies
 3.	Latest releases
