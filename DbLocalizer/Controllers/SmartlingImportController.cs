@@ -104,7 +104,8 @@ namespace DbLocalizer.Controllers
                 var importJson = await _smartlingFileDataService.GetTranslatedFileForLocaleAsync(locale, fileUri, processId);
 
                 // Run the import
-                await _importUtility.Import(importJson);
+                //do something with the importPackage
+                SmartlingImportSqlFilePackageCollection importPackage = await _importUtility.Import(importJson);
 
                 returnData.IsJobRunning = _backgroundWorkerQueue.IsRunning;
                 returnData.OperationComplete = true;

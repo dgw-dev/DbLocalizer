@@ -20,11 +20,15 @@ namespace DbLocalizer.Controllers
         //    return Ok(result);
         //}
 
-        [HttpGet("GetToken")]
+        [HttpPost("GetToken")]
         [ProducesResponseType<string>(StatusCodes.Status200OK)]
-        public IActionResult GetToken(string appKey)
+        public IActionResult GetToken([FromBody] KeyPair appKey)
         {
-            string result = SecureKeysManager.GenerateJwtToken(appKey);
+            string result = SecureKeysManager.GenerateJwtToken(appKey.AppKeyValue);
+            if (string.IsNullOrEmpty(result))
+            {
+                return BadRequest("Invalid app key");
+            }
             return Ok(result);
         }
     }
