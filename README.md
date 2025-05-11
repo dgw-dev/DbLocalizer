@@ -1,7 +1,7 @@
 # DbLocalizer
 
 # Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+This project is for developers and organizations looking for a simple way to export localizable data from, and import localized data to a SQL Server database, via a Translation Management System (TMS). The first release shipps with an implementation of the Smartling plugin, which will act as a starting point for you oww implementation. Over time I hope to be able to add more plugins for different TMS applications.
 
 # Getting Started
 TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
