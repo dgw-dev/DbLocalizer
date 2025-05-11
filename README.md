@@ -6,7 +6,7 @@ This project is for developers and organizations looking for a simple way to exp
 This is a .NET Core Web API application, with the option to add a UI of your choice, either through MVC or a static UI in the wwwroot. The advantage of making the app a service is that it can then be integrated into business processes, allowing user interaction and extensibility. It will also support automation through scheduled jobs. 
 
 # Dual Licensing
-This software uses dual a dual licensing model. Non-commercial use is covered by LICENSE-MIT.md. For commercial use please see LICENSE-MPL.md.
+This software uses a dual licensing model. Non-commercial use is covered by LICENSE-MIT.md. For commercial use please see LICENSE-MPL.md.
 
 # Getting Started
 Please review the wiki for detailed instructions
