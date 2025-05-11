@@ -2,8 +2,6 @@
 {
     public class AppSettings
     {
-        public string ExportEndPoint { get; set; }
-        public string ImportEndPoint { get; set; }
         public string UseScheduler { get; set; }
         public string ScheduledExportCron { get; set; }
         public string ScheduledImportPurgeCron { get; set; }

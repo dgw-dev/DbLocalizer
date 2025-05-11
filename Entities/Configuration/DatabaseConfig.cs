@@ -12,7 +12,7 @@ namespace Entities.Configuration
         public string Name { get; set; }
         public string ConnectionStringName { get; set; }
         public string SourceLocale { get; set; }
-        public string CultureTableSuffix { get; set; }
+        public string LocalizedTableSuffix { get; set; }
         public List<string> TableExclusions { get; set; } = new List<string>();
         public List<string> ExportDataTypes { get; set; } = new List<string>();
         public List<string> ColumnExclusions { get; set; } = new List<string>();

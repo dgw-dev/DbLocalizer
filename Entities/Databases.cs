@@ -31,7 +31,7 @@ namespace Entities
                     Name = dbConfigItem.Name,
                     ConnectionStringName = dbConfigItem.ConnectionStringName,
                     SourceLocale = dbConfigItem.SourceLocale,
-                    CultureTableSuffix = dbConfigItem.CultureTableSuffix,
+                    LocalizedTableSuffix = dbConfigItem.LocalizedTableSuffix,
                     TableExclusions = dbConfigItem.TableExclusions,
                     ExportDataTypes = dbConfigItem.ExportDataTypes,
                     ColumnExclusions = dbConfigItem.ColumnExclusions,
@@ -75,7 +75,7 @@ namespace Entities
         public string Name { get; set; }
         public string ConnectionStringName { get; set; }
         public string SourceLocale { get; set; }
-        public string CultureTableSuffix { get; set; }
+        public string LocalizedTableSuffix { get; set; }
         public string ConnectionStringValue { get; set; }
         public bool HasSchemaObjects { get; set; } = false;
         public bool CanConnect { get; set; } = false;
