@@ -10,6 +10,7 @@ This software uses a dual licensing model. Non-commercial use is covered by LICE
 
 # Getting Started
 Please review the wiki for detailed instructions
+https://github.com/dgw-dev/DbLocalizer/wiki/Getting-Started
 
 # Contribute
 Please contact me if you would like to contribute to this project.
