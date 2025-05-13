@@ -15,7 +15,6 @@ namespace Entities.Plugins.TranslationManagement.Smartling
 
         public SmartlingConfiguration(IConfiguration config)
         {
-            //important, new instance otherwise we end up concatenating the uri over an over
             var smartlingSettings = config.Get<SmartlingSettings>();
             EndPoints = smartlingSettings.SmartlingEndPoints;
             SmartlingEndPoints endPointPaths = smartlingSettings.SmartlingEndPoints;
@@ -43,61 +42,6 @@ namespace Entities.Plugins.TranslationManagement.Smartling
                 throw new ArgumentException("ServiceBaseUri is not set in appsettings.json");
             }
         }
-        //private static SmartlingConfiguration _instance = null;
-        //private static readonly object oLock = new object();
-
-        //private string _baseUri;
-        //public required string workflowUid { get; private set; }
-        //public required SmartlingEndPoints EndPoints { get; set; }
-        //public required SmartlingAuthorization Authorization { get; set; }
-        //private static SmartlingConfiguration Initialize(AppSettings appSettings)
-        //{
-        //    SmartlingConfiguration config = new SmartlingConfiguration();
-        //    //important, new instance otherwise we end up concatenating the uri over an over
-        //    config.EndPoints = new SmartlingEndPoints();
-        //    SmartlingEndPoints endPointPaths = appSettings.SmartlingEndPoints;
-        //    config.Authorization = appSettings.SmartlingAuthorization;
-        //    config.workflowUid = appSettings.SmartlingWorkflowUid;
-        //    config._baseUri = appSettings.TranslationServiceBaseUri;
-
-        //    if (!string.IsNullOrEmpty(config._baseUri) && config.EndPoints != null)
-        //    {
-        //        config.EndPoints.ExportAPI = config._baseUri + endPointPaths.ExportAPI;
-        //        config.EndPoints.ImportAPI = config._baseUri + endPointPaths.ImportAPI;
-        //        config.EndPoints.JobAPI = config._baseUri + endPointPaths.JobAPI;
-        //        config.EndPoints.JobBatchAPI = config._baseUri + endPointPaths.JobBatchAPI;
-        //        config.EndPoints.AuthenticateAPI = config._baseUri + endPointPaths.AuthenticateAPI;
-        //        config.EndPoints.DownloadFile = config._baseUri + endPointPaths.DownloadFile;
-        //        config.EndPoints.FileStatus = config._baseUri + endPointPaths.FileStatus;
-        //    }
-        //    else
-        //    {
-        //        throw new Exception("TranslationServiceBaseUri is not set in appsettings.json");
-        //    }
-
-        //    return config;
-        //}
-
-        //public static SmartlingConfiguration InitializeInstance(AppSettings appSettings)
-        //{
-        //    lock (oLock)
-        //    {
-        //        if (_instance == null)
-        //        {
-        //            _instance = Initialize(appSettings);
-        //        }
-        //        return _instance;
-        //    }
-        //}
-
-        //public static SmartlingConfiguration GetInstance()
-        //{
-        //    return _instance;
-        //}
-
-        //public SmartlingConfiguration Get()
-        //{
-        //    return _instance;
-        //}
+        
     }
 }

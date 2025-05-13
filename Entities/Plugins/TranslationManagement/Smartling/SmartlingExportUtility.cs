@@ -47,10 +47,7 @@ namespace Entities.Plugins.TranslationManagement.Smartling
                 return;
             }
 
-            //get all changes for this app
-            string message = _fileProcessor.ExportType;
-            LogMessage(message);
-
+            string message;
             SmartlingAppData dtmData = null;
 
             try
@@ -90,29 +87,18 @@ namespace Entities.Plugins.TranslationManagement.Smartling
         {
             string message = string.Empty;
 
-            message = _fileProcessor.ExportType;
-            LogMessage(message);
-
-            message = _fileProcessor.ExportType + ": Creating file ";
-            LogMessage(message);
-
             if (appData.FileData.GlobalizationMetaData != null && appData.FileData.Tables != null)
             {
                 AddDtmPackage(ref DtmPackage, appData.FileData, packageId);
 
-                //do we have a package to send for this app
+                //do we have a package to send 
                 if (DtmPackage.Count > 0)
                 {
                     ITranslationManager tmsPlugin = new SmartlingPlugin(_fileProcessor, _smartlingConfiguration, _logger, CacheManager);
                     OperationComplete = await tmsPlugin.TMSOperations<SmartlingExportFile>(DtmPackage, appData?.FileData?.GlobalizationMetaData, packageId, ct, null, Cultures, ProcessId);
 
-                    //if we've posted sucessfully then update the database
-                    if (OperationComplete)
-                    {
-                        message = _fileProcessor.ExportType + ": Export Completed";
-                        LogMessage(message);
-                    }
-                    else
+                    //if export failed
+                    if (!OperationComplete)
                     {
                         message = _fileProcessor.ExportType + ": Export Failed";
                         LogMessage(message, true);
@@ -139,11 +125,10 @@ namespace Entities.Plugins.TranslationManagement.Smartling
                   .Select(rows => rows.ToList());
 
             int tableListCount = 0;
-            if (chunkTables?.Count() > 0)
+            if ((bool)chunkTables?.Any())
             {
                 foreach (IEnumerable<Table> tableList in chunkTables)
                 {
-                    //build DtmFileData object for each chunk
                     SmartlingFileData subFile = new SmartlingFileData();
                     subFile.smartling = dtmCultureData.smartling;
                     subFile.GlobalizationMetaData = dtmCultureData.GlobalizationMetaData;
@@ -220,9 +205,8 @@ namespace Entities.Plugins.TranslationManagement.Smartling
             }
         }
 
-        public SmartlingExportFile AddFile(string fileName, SmartlingFileData jobData, MetaData metaData)
+        public static SmartlingExportFile AddFile(string fileName, SmartlingFileData jobData, MetaData metaData)
         {
-            //TODO The metadata dictionary is redundant, use the dtmCultureData.GlobalizationMetaData. instead
             SmartlingExportFile exportFile = new SmartlingExportFile(jobData, metaData);
             exportFile.FileName = fileName + ".json";
             return exportFile;

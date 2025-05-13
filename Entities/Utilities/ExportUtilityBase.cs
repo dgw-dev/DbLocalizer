@@ -13,10 +13,8 @@ namespace Entities.Utilities
     public class ExportUtilityBase
     {
         protected ILogger _logger = null;
-
         protected readonly IConfiguration _config;
         protected readonly IExportDal _exportDal;
-
         protected int ExportMaxTablesPerFile { get; set; }
         protected int MaxRowsPerFile { get; set; }
         protected decimal MaxRequestSize { get; set; }
@@ -26,7 +24,6 @@ namespace Entities.Utilities
         protected Cultures Cultures { get; set; }
         protected string ExportLookbackInDays { get; set; }
         protected bool OperationComplete { get; set; } = false;
-
         protected ICacheManager CacheManager { get; set; }
 
 
@@ -56,7 +53,6 @@ namespace Entities.Utilities
                 return default;
             }
 
-            // Execute Monolith export in a long running task
             await Task.Factory.StartNew(async () =>
             {
                 Databases databases = CacheManager.GetCacheValue("Databases") as Databases;
@@ -79,7 +75,6 @@ namespace Entities.Utilities
             {
                 return;
             }
-            // Process the export
             await Task.CompletedTask;
         }
 
@@ -101,7 +96,7 @@ namespace Entities.Utilities
             }
             else
             {
-                _logger.LogInformation(message);
+                _logger.LogWarning(message);
             }
         }
 

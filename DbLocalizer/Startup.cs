@@ -53,7 +53,7 @@ namespace DbLocalizer
             services.AddSingleton<IBackgroundWorkerQueue, BackgroundWorkerQueue>();
             services.AddSingleton<ILongRunningService, LongRunningService>();
             services.AddHostedService<LongRunningService>(p => p.GetRequiredService<ILongRunningService>() as LongRunningService);
-            services.AddHealthChecks().AddCheck<HealthChecker>("DTM");
+            services.AddHealthChecks().AddCheck<HealthChecker>("DbLocalizer");
             services.AddQuartz(q => ConfiguredScheduledJobs(q, _configuration));
             services.AddScoped<IGenericRepository, GenericRepository>();
             services.AddScoped<IFileDataService, FileDataService>();

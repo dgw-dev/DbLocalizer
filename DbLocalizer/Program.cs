@@ -13,7 +13,6 @@ namespace DbLocalizer
         public static async Task Main(string[] args)
         {
             var builder = CreateHostBuilder(args).Build();
-            await SqliteUtility.CreateDatabase();
             await builder.RunAsync();
         }
 

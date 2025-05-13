@@ -150,7 +150,7 @@ namespace Entities.BL
                         tableColumns,
                         tableRows,
                         (string)topLevelTableRowData["TableSchema"],
-                        (string)topLevelTableRowData["FullCultureTableName"]);
+                        (string)topLevelTableRowData["FullLocalizedTableName"]);
 
                     exportTables.Add((string)topLevelTableRowData["FullTableName"], exportTable);
                 }
