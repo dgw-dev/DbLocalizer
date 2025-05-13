@@ -40,12 +40,6 @@ namespace Entities.Services
                     return json;
                 }
 
-                if (responseMessage.StatusCode == HttpStatusCode.Forbidden ||
-                    responseMessage.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    // TODO: need error handling
-                }
-
                 return default(T);
             }
             catch (Exception e)
@@ -82,12 +76,6 @@ namespace Entities.Services
                         jsonResult = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
                         var json = JsonConvert.DeserializeObject<T>(jsonResult);
                         return json;
-                    }
-
-                    if (responseMessage.StatusCode == HttpStatusCode.Forbidden ||
-                        responseMessage.StatusCode == HttpStatusCode.Unauthorized)
-                    {
-                        // TODO: need error handling
                     }
 
                     return default(T);
@@ -128,12 +116,6 @@ namespace Entities.Services
                     if (responseMessage.IsSuccessStatusCode)
                     {
                         return true;
-                    }
-
-                    if (responseMessage.StatusCode == HttpStatusCode.Forbidden ||
-                    responseMessage.StatusCode == HttpStatusCode.Unauthorized)
-                    {
-                        // TODO: need error handling
                     }
 
                     return false;
@@ -202,12 +184,6 @@ namespace Entities.Services
                     if (responseMessage.IsSuccessStatusCode)
                     {
                         return true;
-                    }
-
-                    if (responseMessage.StatusCode == HttpStatusCode.Forbidden ||
-                        responseMessage.StatusCode == HttpStatusCode.Unauthorized)
-                    {
-                        // TODO: need error handling
                     }
 
                     return false;

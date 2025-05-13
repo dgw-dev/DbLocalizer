@@ -47,7 +47,6 @@ namespace Entities.Plugins.TranslationManagement.Smartling
             try
             {
                 SmartlingFileData dataToExport = null;
-                //get all base tables for this app
 
                 if (allBaseTables != null && allBaseTables.Count > 0)
                 {
@@ -66,10 +65,10 @@ namespace Entities.Plugins.TranslationManagement.Smartling
                         //main processing logic
                         ProcessExportTableChunks(basetableChunks, export, ct, ref exportTables, ref allTablesToExport, exportLookbackInDays, db);
 
-                        //If we have tables to export then add them to the DtmFileData object
+                        //If we have tables to export then add them to the FileData object
                         if (allTablesToExport.Count > 0)
                         {
-                            dataToExport = AddTableData(allTablesToExport);
+                            dataToExport = AddTableData(allTablesToExport, db);
                             appData.FileData = dataToExport;
                         }
                     }
@@ -88,11 +87,11 @@ namespace Entities.Plugins.TranslationManagement.Smartling
             }
             else
             {
-                throw new InvalidCastException($"Cannot cast DtmAppData to type {typeof(T).Name}");
+                throw new InvalidCastException($"Cannot cast AppData to type {typeof(T).Name}");
             }
         }
 
-        public SmartlingFileData AddTableData(Dictionary<string, ExportTable> allTablesToExport)
+        public SmartlingFileData AddTableData(Dictionary<string, ExportTable> allTablesToExport, Database db)
         {
             SmartlingFileData data = CreateExportFileData();
 
@@ -107,7 +106,7 @@ namespace Entities.Plugins.TranslationManagement.Smartling
                             PrimaryKeyName = exportTable.Value.PrimaryKey,
                             BaseTable = exportTable.Value.TableName,
                             FullBaseTableName = exportTable.Value.FullTableName,
-                            LocalizedTable = exportTable.Value.TableName + "Localized",
+                            LocalizedTable = exportTable.Value.TableName + db.LocalizedTableSuffix,
                             SourceLanguageColumns = new List<SourceLanguageColumn>(),
                             TranslatedLanguageColumns = new List<TranslatedLanguageColumn>(),
                             Rows = new HashSet<Row>(),
@@ -146,8 +145,6 @@ namespace Entities.Plugins.TranslationManagement.Smartling
 
                             foreach (TableColumn col in exportTable.Value?.Columns)
                             {
-                                //Rules can manipulate the column list so we need to ensure that the default column still exists
-                                //before trying to add it
                                 bool columnFound = row.TableRowData.Table.Columns.Cast<DataColumn>().FirstOrDefault(c => c.ColumnName == col.ColumnName) != null;
 
                                 if (columnFound && col.IsSourceColumn)
@@ -155,7 +152,7 @@ namespace Entities.Plugins.TranslationManagement.Smartling
                                     source.Add(new Source()
                                     {
                                         BaseTable = exportTable.Value.TableName,
-                                        LocalizedTable = exportTable.Value.TableName + "Culture",
+                                        LocalizedTable = exportTable.Value.TableName + db.LocalizedTableSuffix,
                                         MaxLength = (col.ColumnLength == 0) ? 1024 : col.ColumnLength,
                                         Column = col.ColumnName,
                                         Text = row.TableRowData[col.ColumnName]

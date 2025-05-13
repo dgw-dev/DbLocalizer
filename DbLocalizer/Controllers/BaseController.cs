@@ -35,7 +35,7 @@ namespace DbLocalizer.Controllers
             }
             else
             {
-                _logger.LogInformation(message);
+                _logger.LogWarning(message);
             }
         }
     }

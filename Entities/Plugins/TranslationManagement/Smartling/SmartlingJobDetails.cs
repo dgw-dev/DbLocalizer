@@ -54,5 +54,5 @@ public class SmartlingLocaleId
     }
 
     public string targetLocaleId { get; set; }
-    public string workflowUid { get; private set; } // = GlobalConfig.GetInstance().AppSettings.SmartlingWorkflowUid;
+    public string workflowUid { get; private set; } 
 }

@@ -40,7 +40,7 @@ namespace Entities.Utilities
 
                 // SQL command to create a new table
                 string createTableQuery = @"
-                CREATE TABLE Logs (
+                CREATE TABLE IF NOT EXISTS Logs (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     LogLevel TEXT,
                     Category TEXT,

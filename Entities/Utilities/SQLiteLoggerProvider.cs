@@ -11,6 +11,7 @@ namespace Entities.Utilities
         public SQLiteLoggerProvider(string connectionString)
         {
             _connectionString = connectionString;
+            SqliteUtility.CreateDatabase().Wait();
         }
         public ILogger CreateLogger(string categoryName)
         {

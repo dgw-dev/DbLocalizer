@@ -40,12 +40,6 @@ namespace Entities.Plugins.TranslationManagement
                     return json;
                 }
 
-                if (responseMessage.StatusCode == HttpStatusCode.Forbidden ||
-                    responseMessage.StatusCode == HttpStatusCode.Unauthorized)
-                {
-                    // TODO: need error handling
-                }
-
                 return default(T);
             }
             catch (Exception e)
@@ -84,12 +78,6 @@ namespace Entities.Plugins.TranslationManagement
                         return json;
                     }
 
-                    if (responseMessage.StatusCode == HttpStatusCode.Forbidden ||
-                        responseMessage.StatusCode == HttpStatusCode.Unauthorized)
-                    {
-                        // TODO: need error handling
-                    }
-
                     return default(T);
                 }
             }
@@ -112,8 +100,6 @@ namespace Entities.Plugins.TranslationManagement
                     var content = new StringContent(jsonObj);
                     content.Headers.ContentType = new MediaTypeHeaderValue("multipart/form-data");
 
-                    string jsonResult = string.Empty;
-
                     var responseMessage = await Policy
                         .Handle<WebException>(ex =>
                         {
@@ -131,12 +117,6 @@ namespace Entities.Plugins.TranslationManagement
                     if (responseMessage.IsSuccessStatusCode)
                     {
                         return true;
-                    }
-
-                    if (responseMessage.StatusCode == HttpStatusCode.Forbidden ||
-                    responseMessage.StatusCode == HttpStatusCode.Unauthorized)
-                    {
-                        // TODO: need error handling
                     }
 
                     return false;
@@ -189,8 +169,6 @@ namespace Entities.Plugins.TranslationManagement
                     var content = new StringContent(JsonConvert.SerializeObject(data));
                     content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-                    string jsonResult = string.Empty;
-
                     var responseMessage = await Policy
                         .Handle<WebException>(ex =>
                         {
@@ -207,12 +185,6 @@ namespace Entities.Plugins.TranslationManagement
                     if (responseMessage.IsSuccessStatusCode)
                     {
                         return true;
-                    }
-
-                    if (responseMessage.StatusCode == HttpStatusCode.Forbidden ||
-                        responseMessage.StatusCode == HttpStatusCode.Unauthorized)
-                    {
-                        // TODO: need error handling
                     }
 
                     return false;

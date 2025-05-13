@@ -106,14 +106,7 @@ namespace Entities.Plugins.TranslationManagement.Smartling
 
             await Parallel.ForEachAsync(availableSmartlingLocales, new ParallelOptions() { MaxDegreeOfParallelism = 2 }, async (locale, ct) =>
             {
-                try
-                {
-                    results.Add(await GetImportJsonFileAsync(locale, fileUri, processId));
-                }
-                catch (Exception)
-                {
-                    // ignored
-                }
+                results.Add(await GetImportJsonFileAsync(locale, fileUri, processId));
             });
 
             return new SmartlingImportJsonFileCollection(results);

@@ -5,11 +5,6 @@ namespace Entities.Plugins.TranslationManagement.Smartling
     public class SmartlingJson
     {
         public required Smartling smartling { get; set; }
-
-        //public SmartlingJson()
-        //{
-        //    smartling = GlobalConfig.GetInstance().AppSettings.Smartling;
-        //}
     }
 
     public class Smartling

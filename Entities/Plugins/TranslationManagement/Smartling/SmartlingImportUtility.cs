@@ -30,7 +30,6 @@ namespace Entities.Plugins.TranslationManagement.Smartling
             {
                 try
                 {
-                    _logger.LogInformation(100, "Start processing files", importFile.ProcessId, importFile.PackageId, DateTime.Now.ToString("yyyy-MM-dd h:mm tt"), false);
                     SmartlingImportSqlFilePackage importSqlPackage = await _fileProcessor.GetCultureContentPackage(importFile);
                     importPackageCollection.AddPackage(importSqlPackage);
                 }
@@ -43,6 +42,8 @@ namespace Entities.Plugins.TranslationManagement.Smartling
                         importFile.FileId,
                         importFile.FileName,
                         ex.StackTrace));
+
+                    _logger.LogError(ex, ex.Message);
                 }
             }
 

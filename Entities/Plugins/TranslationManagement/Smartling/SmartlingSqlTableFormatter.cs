@@ -126,8 +126,11 @@ namespace Entities.Plugins.TranslationManagement.Smartling
                 INSERT INTO {_table.FullLocalizedTableName}({selectInsertCollection.ColumnListSQL})
                 SELECT {selectInsertCollection.SelectSQL}
                 FROM #{LangTempTable} t
-                LEFT JOIN {_table.FullLocalizedTableName} c ON (t.{_table.PrimaryKeyName} = c.{_table.PrimaryKeyName} AND c.CultureCode = {_cultureCodeSqlVariable})
+                LEFT JOIN {_table.FullLocalizedTableName} c ON (t.{_table.PrimaryKeyName} = c.{_table.PrimaryKeyName} AND c.CultureCode = {_cultureCodeSqlVariable}) 
+                WHERE c.{_table.PrimaryKeyName} IS NULL
                 """;
+
+            string updateWhereClause = "WHERE " + string.Join("OR\n ", GetUpdateWhereClause());
 
             string updateCultureTableSql = $"""
                 -- Update existing records in {_table.FullLocalizedTableName}
@@ -135,7 +138,8 @@ namespace Entities.Plugins.TranslationManagement.Smartling
                 SET 
                 {updateCultureTableSetExpression}
                 FROM {_table.FullLocalizedTableName} c
-                INNER JOIN #{LangTempTable} t ON (c.{_table.PrimaryKeyName} = t.{_table.PrimaryKeyName} AND c.CultureCode = {_cultureCodeSqlVariable})
+                INNER JOIN #{LangTempTable} t ON (c.{_table.PrimaryKeyName} = t.{_table.PrimaryKeyName} AND c.CultureCode = {_cultureCodeSqlVariable}) 
+                {updateWhereClause}
                 """;
 
             string dropTempTableSQL = $"""
@@ -166,6 +170,18 @@ namespace Entities.Plugins.TranslationManagement.Smartling
             return setExpressions;
         }
 
+        private List<string> GetUpdateWhereClause()
+        {
+            var whereClause = new List<string>();
+
+            foreach (var pair in _orderedColumnPairs)
+            {
+                whereClause.Add($"ISNULL(c.{pair.Source.ColumnName}, '') <> ISNULL(t.{pair.LangTempCulture}, '') ");
+            }
+
+            return whereClause;
+        }
+
         private SqlColumnSelectCollection GetInsertCultureTableColumnSelects()
         {
             var collection = new SqlColumnSelectCollection();
@@ -193,7 +209,7 @@ namespace Entities.Plugins.TranslationManagement.Smartling
                 {
                     maxLength = "max";
                 }
-                //collection.AddColumnSchema(pair.LangTempBase, $"NVARCHAR({maxLength})");
+
                 collection.AddColumnSchema(pair.LangTempCulture, $"NVARCHAR({maxLength})");
             }
 

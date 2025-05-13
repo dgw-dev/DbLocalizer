@@ -19,11 +19,6 @@ namespace Entities.Plugins.TranslationManagement.Smartling
             _orderedColumns = orderedColumns;
         }
 
-        //private BaseValue FindBaseValueFromSourceColumn(SourceLanguageColumn column)
-        //{
-        //    return _row.BaseValue.Find(bv => string.Equals(bv.Column, column.ColumnName, StringComparison.OrdinalIgnoreCase));
-        //}
-
         private Source FindSourceFromTranslatedColumn(TranslatedLanguageColumn column)
         {
             return _row.Source.Find(source => string.Equals(source.Column, column.ColumnName, StringComparison.OrdinalIgnoreCase));
@@ -53,18 +48,12 @@ namespace Entities.Plugins.TranslationManagement.Smartling
 
         private bool IsRowExceedAnyColumnMaxLengths()
         {
-            // Sometimes translators provide strings that exceeds DB NVARCHAR column lengths so we can't import them,
-            // detecting these strings so we can comment them out
-
             bool exceedMaxLengthDetected = false;
 
             foreach (var pair in _orderedColumns)
             {
-                //var baseValueText = FindBaseValueFromSourceColumn(pair.Source).Text as string ?? ""; // base table text
                 var sourceText = FindSourceFromTranslatedColumn(pair.Translated).Text as string ?? ""; // text from TMS
-
                 exceedMaxLengthDetected |= sourceText.Length > pair.Translated.MaxLength;
-                //exceedMaxLengthDetected |= baseValueText.Length > pair.Source.MaxLength;
             }
 
             return exceedMaxLengthDetected;
@@ -77,10 +66,7 @@ namespace Entities.Plugins.TranslationManagement.Smartling
 
             foreach (var pair in _orderedColumns)
             {
-                //var baseValue = FindBaseValueFromSourceColumn(pair.Source);
                 var source = FindSourceFromTranslatedColumn(pair.Translated);
-
-                //insertValues.Add($"N'{EscapeSqlQuote(baseValue.Text as string)}'");
                 insertValues.Add($"N'{EscapeSqlQuote(source.Text as string)}'");
             }
 

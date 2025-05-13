@@ -73,14 +73,12 @@ namespace Entities.Utilities
             }
         }
 
-        
-
         public string GetBaseTables()
         {
             string tablesToExclude = string.Empty;
             string exclusionList = string.Empty;
             string cultureTable = string.Empty;
-            string fullCultureTableName = "'' AS 'FullCultureTableName,";
+            string fullCultureTableName = "'' AS 'FullLocalizedTableName,";
 
             if (ExclusionList != null && ExclusionList.Count > 0)
             {
@@ -100,7 +98,7 @@ namespace Entities.Utilities
 
             if (!string.IsNullOrEmpty(_localizedTableSuffix))
             {
-                fullCultureTableName = "MIN(QUOTENAME(TABLE_SCHEMA) + '.' + QUOTENAME(TABLE_NAME + '" + _localizedTableSuffix + "')) AS 'FullCultureTableName',";
+                fullCultureTableName = "MIN(QUOTENAME(TABLE_SCHEMA) + '.' + QUOTENAME(TABLE_NAME + '" + _localizedTableSuffix + "')) AS 'FullLocalizedTableName',";
                 cultureTable = " AND SC1.TABLE_NAME NOT LIKE '%" + _localizedTableSuffix + "%'";
             }
 
