@@ -16,7 +16,7 @@ namespace Entities.Plugins.TranslationManagement.Smartling
     {
         protected ISmartlingExportFileProcessor _fileProcessor = null;
         private readonly ISmartlingConfiguration _smartlingConfiguration;
-        public Dictionary<string, SmartlingExportFile> DtmPackage = new Dictionary<string, SmartlingExportFile>();
+        public Dictionary<string, SmartlingExportFile> ExportPackage = new Dictionary<string, SmartlingExportFile>();
         public List<SmartlingExportFile> ExportFiles { get; set; }
         public SmartlingJobDetails JobDetails { get; set; }
         
@@ -58,7 +58,7 @@ namespace Entities.Plugins.TranslationManagement.Smartling
 
                 if (dtmData.FileData != null && dtmData.FileData.Tables.Count > 0)
                 {
-
+                    dtmData.DatabaseName = db.Name;
                     dtmData.FileData.GlobalizationMetaData.PackageId = packageId;
                     dtmData.FileData.GlobalizationMetaData.ExportType = _fileProcessor.ExportType;
                     dtmData.FileData.GlobalizationMetaData.DatabaseName = db.Name;
@@ -89,13 +89,13 @@ namespace Entities.Plugins.TranslationManagement.Smartling
 
             if (appData.FileData.GlobalizationMetaData != null && appData.FileData.Tables != null)
             {
-                AddDtmPackage(ref DtmPackage, appData.FileData, packageId);
+                AddDtmPackage(ref ExportPackage, appData.FileData, packageId);
 
                 //do we have a package to send 
-                if (DtmPackage.Count > 0)
+                if (ExportPackage.Count > 0)
                 {
                     ITranslationManager tmsPlugin = new SmartlingPlugin(_fileProcessor, _smartlingConfiguration, _logger, CacheManager);
-                    OperationComplete = await tmsPlugin.TMSOperations<SmartlingExportFile>(DtmPackage, appData?.FileData?.GlobalizationMetaData, packageId, ct, null, Cultures, ProcessId);
+                    OperationComplete = await tmsPlugin.TMSOperations<SmartlingExportFile>(ExportPackage, appData?.FileData?.GlobalizationMetaData, packageId, ct, null, Cultures, ProcessId);
 
                     //if export failed
                     if (!OperationComplete)
@@ -171,6 +171,7 @@ namespace Entities.Plugins.TranslationManagement.Smartling
                 {
                     foreach (KeyValuePair<string, SmartlingFileData> fileCollection in subData)
                     {
+                        if (fileCollection.Key == subData.Last().Key) { dtmCultureData.GlobalizationMetaData.LastFile = true; }
                         subFiles.Add(fileCollection.Key, AddFile(fileCollection.Key, fileCollection.Value, dtmCultureData.GlobalizationMetaData));
                     }
                 }

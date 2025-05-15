@@ -20,6 +20,7 @@ namespace Entities.Plugins.TranslationManagement.Smartling
 
         public SmartlingExportFile(SmartlingFileData dataToExport, MetaData metaData)
         {
+            DatabaseName = metaData.DatabaseName;
             ExportData = dataToExport;
             MetaData = metaData;
 
