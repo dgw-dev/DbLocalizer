@@ -16,7 +16,7 @@ namespace Entities.Utilities
         protected readonly IConfiguration _config;
         protected readonly IExportDal _exportDal;
         protected int ExportMaxTablesPerFile { get; set; }
-        protected int MaxRowsPerFile { get; set; }
+        protected int MaxRowsPerTable { get; set; }
         protected decimal MaxRequestSize { get; set; }
         protected bool IsDevelopmentEnvironment { get; set; }
         public Guid ProcessId { get; set; }
@@ -37,7 +37,7 @@ namespace Entities.Utilities
         {
             _logger = logger;
             ExportMaxTablesPerFile = Convert.ToInt32(appSettings.ExportMaxTablesPerFile);
-            MaxRowsPerFile = Convert.ToInt32(appSettings.MaxRowsPerFile);
+            MaxRowsPerTable = Convert.ToInt32(appSettings.MaxRowsPerTable);
             ExportLookbackInDays = appSettings.ExportLookbackInDays;
             MaxRequestSize = Convert.ToDecimal(appSettings.MaximumRequestSize) / 1024 / 1024;
             ProcessId = processId;

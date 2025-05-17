@@ -14,7 +14,7 @@ namespace Entities.Plugins.TranslationManagement.Smartling
         string ExportType { get; set; }
         ICacheManager CacheManager { get; set; }
         Dictionary<string, List<DataSet>> DatabaseUpdatesForApp { get; set; }
-        T ProcessExportData<T>(string exportLookbackInDays, int exportMaxTablesPerFile, int maxRowsPerFile, CancellationToken ct, Database db);
+        T ProcessExportData<T>(string exportLookbackInDays, int exportMaxTablesPerFile, int maxRowsPerTable, CancellationToken ct, Database db);
         MultipartFormDataContent GetCultureContent(SmartlingExportFile culturePackage, List<SmartlingLocaleId> localeIds, string callbackUrl = default(string));
     }
 }

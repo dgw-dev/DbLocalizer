@@ -36,7 +36,7 @@ namespace Entities.Plugins.TranslationManagement.Smartling
             _smartlingConfiguration = smartlingConfig;
         }
 
-        public T ProcessExportData<T>(string exportLookbackInDays, int exportMaxTablesPerFile, int maxRowsPerFile, CancellationToken ct, Database db)
+        public T ProcessExportData<T>(string exportLookbackInDays, int exportMaxTablesPerFile, int maxRowsPerTable, CancellationToken ct, Database db)
         {
             Dictionary<string, ExportTable> exportTables = new Dictionary<string, ExportTable>();
             Dictionary<string, ExportTable> allTablesToExport = new Dictionary<string, ExportTable>();

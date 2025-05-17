@@ -7,7 +7,7 @@
         public string ScheduledImportPurgeCron { get; set; }
         public string ImportMaxTablesPerFile { get; set; }
         public string ExportMaxTablesPerFile { get; set; }
-        public string MaxRowsPerFile { get; set; }
+        public string MaxRowsPerTable { get; set; }
         public string ExportLookbackInDays { get; set; }
         public string MaximumRequestSize { get; set; }
         public string DataToPurgeInDays { get; set; }
