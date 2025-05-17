@@ -41,9 +41,14 @@ namespace Entities
                 string connectionString = _config.GetConnectionString(db.ConnectionStringName);
                 DbCredentialsManager dbCredentialsManager = new DbCredentialsManager();
                 DbCredentials dbCredentials = dbCredentialsManager.GetDbCredentials(db.ConnectionStringName);
-                if (dbCredentials != null && !string.IsNullOrEmpty(dbCredentials.Username) && !string.IsNullOrEmpty(dbCredentials.Password) && !string.IsNullOrEmpty(connectionString))
+                if (dbCredentials != null
+                    && !string.IsNullOrEmpty(dbCredentials.ServerName)
+                    && !string.IsNullOrEmpty(dbCredentials.DatabaseName)
+                    && !string.IsNullOrEmpty(dbCredentials.Username) 
+                    && !string.IsNullOrEmpty(dbCredentials.Password) 
+                    && !string.IsNullOrEmpty(connectionString))
                 {
-                    connectionString = string.Format(connectionString, dbCredentials.Username, dbCredentials.Password);
+                    connectionString = string.Format(connectionString, dbCredentials.ServerName, dbCredentials.DatabaseName, dbCredentials.Username, dbCredentials.Password);
                     db.ConnectionStringValue = connectionString;
                     db.CanConnect = DatabaseCanConnect(connectionString);
                     _sqlSchemaBuilder.BuildDatabaseSchemaFiles(db);

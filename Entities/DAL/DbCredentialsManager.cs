@@ -10,7 +10,7 @@ namespace Entities.DAL
         private readonly Dictionary<string, DbCredentials> _dbCredentials = new Dictionary<string, DbCredentials>()
         {
             {
-                "LocalizationTest", new DbCredentials() { Username = "LocalizationUser", Password = "@LocalizationTest#"}
+                "LocalizationTest", new DbCredentials() { ServerName = "localhost", DatabaseName = "LocalizationTest", Username = "LocalizationUser", Password = "@LocalizationTest#"}
             }
         };
         public DbCredentials GetDbCredentials(string connectionStringName)
@@ -21,6 +21,8 @@ namespace Entities.DAL
 
     public class DbCredentials
     {
+        public string DatabaseName { get; set; }
+        public string ServerName { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
     }

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Entities;
 using static Entities.Plugins.TranslationManagement.Smartling.SmartlingFileData;
 
 namespace Entities.Plugins.TranslationManagement.Smartling
@@ -54,7 +55,7 @@ namespace Entities.Plugins.TranslationManagement.Smartling
             {
                 string packageId = Guid.NewGuid().ToString();
 
-                dtmData = _fileProcessor.ProcessExportData<SmartlingAppData>(ExportLookbackInDays, ExportMaxTablesPerFile, MaxRowsPerFile, ct, db);
+                dtmData = _fileProcessor.ProcessExportData<SmartlingAppData>(ExportLookbackInDays, ExportMaxTablesPerFile, MaxRowsPerTable, ct, db);
 
                 if (dtmData.FileData != null && dtmData.FileData.Tables.Count > 0)
                 {
@@ -112,59 +113,43 @@ namespace Entities.Plugins.TranslationManagement.Smartling
             }
         }
 
-        public Dictionary<string, SmartlingExportFile> BuildDtmFileDataCollection(SmartlingFileData dtmCultureData, int exportMaxTablesPerFile, int maxRowsPerFile)
+        public static Dictionary<string, SmartlingExportFile> BuildDtmFileDataCollection(SmartlingFileData dtmCultureData, int exportMaxTablesPerFile, int maxRowsPerTable)
         {
-            //A dictionary to hold all sub files per file
-            Dictionary<string, SmartlingExportFile> subFiles = new Dictionary<string, SmartlingExportFile>();
-
-            //A dictionary to hold all sub data per file
-            Dictionary<string, SmartlingFileData> subData = new Dictionary<string, SmartlingFileData>();
-
-            //first we need to divide the data based on the exportMaxTablesPerFile value and then the maxRowsPerFile value
-            IEnumerable<IEnumerable<Table>> chunkTables = dtmCultureData?.Tables?.AsEnumerable().ToChunks(exportMaxTablesPerFile)
-                  .Select(rows => rows.ToList());
-
-            int tableListCount = 0;
-            if ((bool)chunkTables?.Any())
+            if (dtmCultureData != null && dtmCultureData.Tables != null && dtmCultureData.Tables.Any())
             {
-                foreach (IEnumerable<Table> tableList in chunkTables)
+                //A dictionary to hold all sub files per file
+                Dictionary<string, SmartlingExportFile> subFiles = new Dictionary<string, SmartlingExportFile>();
+
+                //A dictionary to hold all row chunks per table file
+                Dictionary<string, List<HashSet<Row>>> tabelRowChunks = new Dictionary<string, List<HashSet<Row>>>();
+
+                int tableCount = 0;
+                foreach (Table table in dtmCultureData.Tables)
                 {
-                    SmartlingFileData subFile = new SmartlingFileData();
-                    subFile.smartling = dtmCultureData.smartling;
-                    subFile.GlobalizationMetaData = dtmCultureData.GlobalizationMetaData;
-                    subFile.Tables = new List<Table>();
-                    foreach (Table table in tableList)
+                    //Get rows based on the max number of rows we're allowed per table
+                    List<HashSet<Row>> chunkRows = SplitRowList<Row>(table.Rows, maxRowsPerTable);
+
+                    if (chunkRows != null)
                     {
-                        IEnumerable<IEnumerable<Row>> chunkRows = table.Rows?.AsEnumerable().ToChunks(maxRowsPerFile)
-                              .Select(rows => rows.ToHashSet());
-
-                        if (chunkRows != null)
+                        foreach (IEnumerable<Row> chunk in chunkRows)
                         {
-                            //create a new file for each chunk of rows
-                            foreach (IEnumerable<Row> chunk in chunkRows)
+                            List<HashSet<Row>> rows = new List<HashSet<Row>>() { chunk as HashSet<Row> };
+
+                            if (!tabelRowChunks.TryGetValue(table.FullBaseTableName, out List<HashSet<Row>> _))
                             {
-
-                                Table subTable = new Table()
-                                {
-                                    PrimaryKeyName = table.PrimaryKeyName,
-                                    BaseTable = table.BaseTable,
-                                    FullBaseTableName = table.FullBaseTableName,
-                                    LocalizedTable = table.LocalizedTable,
-                                    FullLocalizedTableName = table.FullLocalizedTableName,
-                                    TableSchema = table.TableSchema,
-                                    SystemColumns = table.SystemColumns,
-                                    SourceLanguageColumns = table.SourceLanguageColumns,
-                                    TranslatedLanguageColumns = table.TranslatedLanguageColumns,
-
-                                    Rows = chunk as HashSet<Row>,
-                                };
-                                subFile.Tables.Add(subTable);
+                                tabelRowChunks.Add(table.FullBaseTableName, rows);
+                            }
+                            else
+                            {
+                                tabelRowChunks[table.FullBaseTableName].AddRange(rows);
                             }
                         }
                     }
-                    subData.Add(subFile.GlobalizationMetaData.PackageId + "_" + dtmCultureData.GlobalizationMetaData.Locale + "_" + tableListCount.ToString(), subFile);
-                    tableListCount++;
+                    tableCount++;
                 }
+
+                //split data into sub data objects
+                Dictionary<string, SmartlingFileData> subData = GetSubData(dtmCultureData, tabelRowChunks);
 
                 //now we need to create ExportFile objects for each sub data object
                 if (subData?.Count > 0)
@@ -175,27 +160,30 @@ namespace Entities.Plugins.TranslationManagement.Smartling
                         subFiles.Add(fileCollection.Key, AddFile(fileCollection.Key, fileCollection.Value, dtmCultureData.GlobalizationMetaData));
                     }
                 }
+
+                return subFiles;
             }
 
-            return subFiles;
+            return new Dictionary<string, SmartlingExportFile>();
         }
 
-        public virtual void AddDtmPackage(ref Dictionary<string, SmartlingExportFile> dtmPackage, SmartlingFileData fileData, string packageId)
+        public virtual void AddDtmPackage(ref Dictionary<string, SmartlingExportFile> exportPackage, SmartlingFileData fileData, string packageId)
         {
             try
             {
-                Dictionary<string, SmartlingExportFile> subFiles = BuildDtmFileDataCollection(fileData, ExportMaxTablesPerFile, MaxRowsPerFile);
+                Dictionary<string, SmartlingExportFile> subFiles = BuildDtmFileDataCollection(fileData, ExportMaxTablesPerFile, MaxRowsPerTable);
 
                 if (subFiles?.Count > 0)
                 {
                     foreach (KeyValuePair<string, SmartlingExportFile> subFile in subFiles)
                     {
-                        dtmPackage.Add(subFile.Key, subFile.Value);
+                        exportPackage.Add(subFile.Key, subFile.Value);
                     }
                 }
                 else
                 {
-                    dtmPackage.Add(packageId, new SmartlingExportFile(fileData, fileData.GlobalizationMetaData));
+                    fileData.GlobalizationMetaData.LastFile = true;
+                    exportPackage.Add(packageId, new SmartlingExportFile(fileData, fileData.GlobalizationMetaData));
                 }
             }
             catch (Exception ex)
@@ -211,6 +199,69 @@ namespace Entities.Plugins.TranslationManagement.Smartling
             SmartlingExportFile exportFile = new SmartlingExportFile(jobData, metaData);
             exportFile.FileName = fileName + ".json";
             return exportFile;
+        }
+
+        private static Dictionary<string, SmartlingFileData> GetSubData(SmartlingFileData dtmCultureData, Dictionary<string, List<HashSet<Row>>> tabelRowChunks)
+        {
+            // Find the entry with the largest number of HashSet<Row> in its value list
+            var maxEntry = tabelRowChunks
+                .OrderByDescending(kvp => kvp.Value?.Count ?? 0)
+                .FirstOrDefault();
+
+            //we need to know how many files we will need to create for each table
+            int totalFilesNeeded = maxEntry.Value?.Count ?? 0;
+
+            Dictionary<string, SmartlingFileData> subData = new Dictionary<string, SmartlingFileData>();
+
+            int fileCount = 0;
+            
+            while (fileCount < totalFilesNeeded)
+            {
+                SmartlingFileData subDataFile = new SmartlingFileData();
+                subDataFile.Tables = new List<Table>();
+                subDataFile.smartling = dtmCultureData.smartling;
+                subDataFile.GlobalizationMetaData = dtmCultureData.GlobalizationMetaData;
+                string fileName = $"{dtmCultureData.GlobalizationMetaData.PackageId}_{fileCount}";
+
+                foreach (Table table in dtmCultureData.Tables)
+                {
+                    var rowSet = tabelRowChunks.FirstOrDefault(l => l.Key == table.FullBaseTableName).Value[fileCount];
+                    if (rowSet != null && rowSet.Count > fileCount)
+                    {
+                        // Create a new table object for each chunk
+                        Table newTable = new Table()
+                        {
+                            Rows = rowSet,
+                            FullBaseTableName = table.FullBaseTableName,
+                            LocalizedTable = table.LocalizedTable,
+                            PrimaryKeyName = table.PrimaryKeyName,
+                            SystemColumns = table.SystemColumns,
+                            SourceLanguageColumns = table.SourceLanguageColumns,
+                            TranslatedLanguageColumns = table.TranslatedLanguageColumns
+                        };
+                        subDataFile.Tables.Add(newTable);
+                    }
+                }
+                subData.Add(fileName, subDataFile);
+                fileCount++;
+            }
+
+            return subData;
+        }
+
+        private static List<HashSet<T>> SplitRowList<T>(HashSet<T> list, int chunkSize)
+        {
+            var chunks = new List<HashSet<T>>();
+            if (list == null || chunkSize <= 0)
+                return chunks;
+
+            var array = list.ToArray();
+            for (int i = 0; i < array.Length; i += chunkSize)
+            {
+                var chunk = array.Skip(i).Take(chunkSize);
+                chunks.Add(new HashSet<T>(chunk));
+            }
+            return chunks;
         }
     }
 }
