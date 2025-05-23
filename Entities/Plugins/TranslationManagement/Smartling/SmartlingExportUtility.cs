@@ -15,7 +15,7 @@ namespace Entities.Plugins.TranslationManagement.Smartling
 {
     public class SmartlingExportUtility : ExportUtilityBase, IExportUtility
     {
-        protected ISmartlingExportFileProcessor _fileProcessor = null;
+        protected IExportFileProcessor _fileProcessor = null;
         private readonly ISmartlingConfiguration _smartlingConfiguration;
         public Dictionary<string, SmartlingExportFile> ExportPackage = new Dictionary<string, SmartlingExportFile>();
         public List<SmartlingExportFile> ExportFiles { get; set; }
@@ -23,7 +23,7 @@ namespace Entities.Plugins.TranslationManagement.Smartling
         
 
         public SmartlingExportUtility(
-            ISmartlingExportFileProcessor fileProcessor,
+            IExportFileProcessor fileProcessor,
             IFileDataService fileDataService,
             IExportDal exportDal,
             AppSettings appSettings,
@@ -232,9 +232,12 @@ namespace Entities.Plugins.TranslationManagement.Smartling
                         Table newTable = new Table()
                         {
                             Rows = rowSet,
+                            BaseTable = table.BaseTable,
                             FullBaseTableName = table.FullBaseTableName,
                             LocalizedTable = table.LocalizedTable,
+                            FullLocalizedTableName = table.FullLocalizedTableName,
                             PrimaryKeyName = table.PrimaryKeyName,
+                            TableSchema = table.TableSchema,
                             SystemColumns = table.SystemColumns,
                             SourceLanguageColumns = table.SourceLanguageColumns,
                             TranslatedLanguageColumns = table.TranslatedLanguageColumns

@@ -6,6 +6,7 @@ using Entities.Plugins.TranslationManagement.Smartling;
 using Entities.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -21,7 +22,7 @@ namespace DbLocalizer.Controllers
     [EnableCors("DbLocalizerCorsPolicy")]
     [Route("api/[controller]")]
     [ApiController]
-    public class SmartlingExportController : BaseController
+    public class ExportController : BaseController
     {
         private readonly IBackgroundWorkerQueue _backgroundWorkerQueue;
         private readonly AppSettings _appSettings;
@@ -29,17 +30,18 @@ namespace DbLocalizer.Controllers
         private readonly IExportDal _exportDal;
         private readonly IFileDataService _fileDataService;
 
-        public SmartlingExportController(
+        public ExportController(
             IBackgroundWorkerQueue backgroundWorkerQueue,
             ILongRunningService longRunningService,
             AppSettings appSettings,
-            ILogger<SmartlingExportController> logger,
+            ILogger<ExportController> logger,
             IExportDal exportDal,
             IFileDataService fileDataService,
             IMemoryCache memoryCache,
             IConfiguration config,
-            ISqlSchemaBuilder sqlSchemaBuilder)
-            : base(memoryCache, config, sqlSchemaBuilder, logger)
+            ISqlSchemaBuilder sqlSchemaBuilder,
+            IEncryptionService encryptionService)
+            : base(memoryCache, config, sqlSchemaBuilder, logger, encryptionService)
         {
             _backgroundWorkerQueue = backgroundWorkerQueue;
             _appSettings = appSettings;
@@ -76,6 +78,10 @@ namespace DbLocalizer.Controllers
             {
                 return BadRequest("The required database and/or culture data is null");
             }
+            if (string.IsNullOrEmpty(_appSettings.TMSPlugin)) 
+            {
+                return BadRequest("Please set your choice of TMSPlugin in the appSettings.json config file");
+            }
 
             Guid processId = Guid.NewGuid();
             CancellationTokenSource tokenSource = new CancellationTokenSource();
@@ -100,19 +106,27 @@ namespace DbLocalizer.Controllers
             {
                 try
                 {
-                    ISmartlingConfiguration smartlingConfig = new SmartlingConfiguration(_config);
-                    ISmartlingExportFileProcessor _fileProcessor = new SmartlingExportFileProcessor(_logger, _exportDal, "Default", CacheManager, _schemaBuilder, smartlingConfig);
-                    IExportUtility util = new SmartlingExportUtility(
-                        _fileProcessor,
-                        _fileDataService,
-                        _exportDal,
-                        _appSettings,
-                        _config,
-                        smartlingConfig,
-                        _logger,
-                        processId);
+                    switch (_appSettings.TMSPlugin) 
+                    {
+                        case "Smartling":
+                            ISmartlingConfiguration smartlingConfig = new SmartlingConfiguration(_config);
+                            IExportFileProcessor _fileProcessor = new SmartlingExportFileProcessor(_logger, _exportDal, "Default", CacheManager, _schemaBuilder, smartlingConfig);
+                            IExportUtility util = new SmartlingExportUtility(
+                                _fileProcessor,
+                                _fileDataService,
+                                _exportDal,
+                                _appSettings,
+                                _config,
+                                smartlingConfig,
+                                _logger,
+                                processId);
 
-                    result = await util.Export(ct);
+                            result = await util.Export(ct);
+                            break;
+                        default:
+                            throw new NotImplementedException("The TMSPlugin is not implemented");
+                    }
+                    
                 }
                 catch (Exception ex)
                 {

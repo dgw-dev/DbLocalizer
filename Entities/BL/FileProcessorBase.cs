@@ -203,20 +203,6 @@ namespace Entities.BL
             return result;
         }
 
-        public void AddFileContent(MultipartFormDataContent content, string fileName, string sqlFileContent, List<SmartlingLocaleId> localeIds, string callBackUrl)
-        {
-            //add to outputcontent
-            StreamContent streamContent = CreateFileContent(sqlFileContent, fileName, "application/json", new UTF8Encoding(false));
-            content.Add(streamContent, "file");
-            content.Add(new StringContent(fileName ?? string.Empty), "fileUri");
-            content.Add(new StringContent("json" ?? string.Empty), "fileType");
-            foreach (SmartlingLocaleId locale in localeIds)
-            {
-                content.Add(new StringContent(locale.targetLocaleId ?? string.Empty), "localeIdsToAuthorize[]");
-            }
-            content.Add(new StringContent(callBackUrl ?? string.Empty), "callbackUrl");
-        }
-
         public bool IsCancelled(CancellationToken ct)
         {
             if (ct.IsCancellationRequested || !TokenStore.Store.TryGetValue(ProcessId, out CancellationTokenSource _))

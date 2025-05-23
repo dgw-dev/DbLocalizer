@@ -10,7 +10,7 @@
         public string MaxRowsPerTable { get; set; }
         public string ExportLookbackInDays { get; set; }
         public string MaximumRequestSize { get; set; }
-        public string DataToPurgeInDays { get; set; }
+        public string TMSPlugin { get; set; }
         public Cors Cors { get; set; }
     }
 

@@ -8,5 +8,6 @@ namespace Entities.Interfaces
     {
         DataTable GetTables(string connectionString, string tableName, string sql = default);
         Task<DataTable> GetTabeSchema(string connectionString, string tableName);
+        Task<int> ExecuteNonQueryAsync(string connectionString, string sql);
     }
 }

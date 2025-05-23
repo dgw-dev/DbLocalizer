@@ -17,10 +17,10 @@ namespace Entities.Plugins.TranslationManagement.Smartling
         private readonly ISmartlingConfiguration _smartlingConfig;
         private readonly ILogger _logger;
 
-        private readonly ISmartlingExportFileProcessor _fileProcessor;
+        private readonly IExportFileProcessor _fileProcessor;
         private readonly ISmartlingDataService _fileDataService;
 
-        public SmartlingPlugin(ISmartlingExportFileProcessor fileProcessor,
+        public SmartlingPlugin(IExportFileProcessor fileProcessor,
             ISmartlingConfiguration smartlingConfig,
             ILogger logger,
             ICacheManager cacheManager) : base(cacheManager)

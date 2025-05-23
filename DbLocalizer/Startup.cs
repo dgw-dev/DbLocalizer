@@ -39,6 +39,9 @@ namespace DbLocalizer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDataProtection();
+            services.AddSingleton<IEncryptionService, EncryptionService>();
+
             services.AddScoped<IGenericPluginInData, GenericPluginInData>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IMemoryCache, MemoryCache>();
@@ -58,6 +61,7 @@ namespace DbLocalizer
             services.AddScoped<IGenericRepository, GenericRepository>();
             services.AddScoped<IFileDataService, FileDataService>();
             services.AddScoped<IExportDal, ExportDal>();
+            services.AddScoped<IImportDal, ImportDal>();
             services.AddScoped<ICacheManager, CacheManager>();
 
             services.AddScoped<ISmartlingConfiguration>(provider =>
@@ -69,6 +73,8 @@ namespace DbLocalizer
             services.AddScoped<ISmartlingImportUtility, SmartlingImportUtility>();
             services.AddScoped<ISmartlingImportFileProcessor, SmartlingImportFileProcessor>();
             services.AddScoped<ISmartlingSqlProcessor, SmartlingSqlProcessor>();
+
+            
 
 
             services.AddSwaggerGen(options =>
