@@ -5,6 +5,7 @@ using Entities.Plugins.TranslationManagement.Smartling;
 using Entities.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -33,8 +34,9 @@ namespace DbLocalizer.Controllers
             ISmartlingImportUtility importUtility,
             IMemoryCache memoryCache,
             IConfiguration config,
-            ISqlSchemaBuilder sqlSchemaBuilder
-        ) : base(memoryCache, config, sqlSchemaBuilder, logger)
+            ISqlSchemaBuilder sqlSchemaBuilder,
+            IEncryptionService encryptionService
+        ) : base(memoryCache, config, sqlSchemaBuilder, logger, encryptionService)
         {
             _backgroundWorkerQueue = backgroundWorkerQueue;
             _importUtility = importUtility;
@@ -101,14 +103,23 @@ namespace DbLocalizer.Controllers
                 }
 
                 // Download import json from smartling
-                var importJson = await _smartlingFileDataService.GetTranslatedFileForLocaleAsync(locale, fileUri, processId);
+                var importJsonFileCollection = await _smartlingFileDataService.GetTranslatedFileForLocaleAsync(locale, fileUri, processId);
 
                 // Run the import
                 //do something with the importPackage
-                SmartlingImportSqlFilePackageCollection importPackage = await _importUtility.Import(importJson);
+                SmartlingImportSqlFilePackageCollection importPackage = await _importUtility.Import(importJsonFileCollection);
+
+                //check errors
+                if (_importUtility.ErrorList.Count > 0)
+                {
+                    foreach (var error in _importUtility.ErrorList)
+                    {
+                        returnData.ImportErrors.Add(new ImportErrorEntry(error.Message, processId, importJsonFileCollection.PackageId, Guid.Empty));
+                    }
+                }
 
                 returnData.IsJobRunning = _backgroundWorkerQueue.IsRunning;
-                returnData.OperationComplete = true;
+                returnData.OperationComplete = _importUtility.OperationComplete;
 
                 return Ok(JsonUtility.SerializeData<ReturnData>(returnData));
             }
@@ -199,8 +210,17 @@ namespace DbLocalizer.Controllers
                 //do something with the importPackage
                 SmartlingImportSqlFilePackageCollection importPackage = await _importUtility.Import(importJsonFileCollection);
 
+                //check errors
+                if (_importUtility.ErrorList.Count > 0)
+                {
+                    foreach (var error in _importUtility.ErrorList)
+                    {
+                        returnData.ImportErrors.Add(new ImportErrorEntry(error.Message, processId, importJsonFileCollection.PackageId, Guid.Empty));
+                    }
+                }
+
                 returnData.IsJobRunning = _backgroundWorkerQueue.IsRunning;
-                returnData.OperationComplete = true;
+                returnData.OperationComplete = _importUtility.OperationComplete;
 
                 return Ok(JsonUtility.SerializeData<ReturnData>(returnData));
             }

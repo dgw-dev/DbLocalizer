@@ -13,7 +13,7 @@ using static Entities.Plugins.TranslationManagement.Smartling.SmartlingFileData;
 
 namespace Entities.Plugins.TranslationManagement.Smartling
 {
-    public class SmartlingExportFileProcessor : FileProcessorBase, ISmartlingExportFileProcessor
+    public class SmartlingExportFileProcessor : FileProcessorBase, IExportFileProcessor
     {
         public Dictionary<string, List<DataSet>> DatabaseUpdatesForApp { get; set; }
         private readonly ISmartlingConfiguration _smartlingConfiguration;
@@ -179,26 +179,6 @@ namespace Entities.Plugins.TranslationManagement.Smartling
             }
 
             return data;
-        }
-
-        public MultipartFormDataContent GetCultureContent(SmartlingExportFile culturePackage, List<SmartlingLocaleId> localeIds, string callbackUrl = default(string))
-        {
-            MultipartFormDataContent content = null;
-            content = new MultipartFormDataContent();
-            content.Headers.ContentType.MediaType = "multipart/form-data";
-
-            try
-            {
-
-                AddFileContent(content, culturePackage.FileName, culturePackage.JsonOutput, localeIds, callbackUrl);
-
-            }
-            catch (Exception ex)
-            {
-                ErrorList.Add(new ExportErrorEntry(ProcessId, null, ex.Message, ex.StackTrace));
-                throw;
-            }
-            return content;
         }
 
         public SmartlingFileData CreateExportFileData()

@@ -1,13 +1,11 @@
-﻿using Entities.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Net.Http;
 using System.Threading;
 
-namespace Entities.Plugins.TranslationManagement.Smartling
+namespace Entities.Interfaces
 {
-    public interface ISmartlingExportFileProcessor
+    public interface IExportFileProcessor
     {
         Guid ProcessId { get; set; }
         List<ExportErrorEntry> ErrorList { get; set; }
@@ -15,6 +13,5 @@ namespace Entities.Plugins.TranslationManagement.Smartling
         ICacheManager CacheManager { get; set; }
         Dictionary<string, List<DataSet>> DatabaseUpdatesForApp { get; set; }
         T ProcessExportData<T>(string exportLookbackInDays, int exportMaxTablesPerFile, int maxRowsPerTable, CancellationToken ct, Database db);
-        MultipartFormDataContent GetCultureContent(SmartlingExportFile culturePackage, List<SmartlingLocaleId> localeIds, string callbackUrl = default(string));
     }
 }

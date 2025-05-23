@@ -2,7 +2,9 @@
 using Entities.DAL;
 using Entities.Interfaces;
 using Entities.Utilities;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Data;
 
@@ -12,12 +14,15 @@ namespace Entities
     {
         private readonly IConfiguration _config;
         private readonly ISqlSchemaBuilder _sqlSchemaBuilder;
+        private readonly IDataProtectionProvider _dataProtectionProvider;
+        private readonly IEncryptionService _encryptionService;
         public List<Database> DatabaseCollection { get; set; } = new List<Database>();
 
-        public Databases(IConfiguration config, ISqlSchemaBuilder sqlSchemaBuilder)
+        public Databases(IConfiguration config, ISqlSchemaBuilder sqlSchemaBuilder, IEncryptionService encryptionService)
         {
             _config = config;
             _sqlSchemaBuilder = sqlSchemaBuilder;
+            _encryptionService = encryptionService;
             BuildDatabases();
         }
 
@@ -49,8 +54,8 @@ namespace Entities
                     && !string.IsNullOrEmpty(connectionString))
                 {
                     connectionString = string.Format(connectionString, dbCredentials.ServerName, dbCredentials.DatabaseName, dbCredentials.Username, dbCredentials.Password);
-                    db.ConnectionStringValue = connectionString;
-                    db.CanConnect = DatabaseCanConnect(connectionString);
+                    db.ConnectionStringValue = _encryptionService.Encrypt(connectionString);
+                    db.CanConnect = DatabaseCanConnect(db.ConnectionStringValue);
                     _sqlSchemaBuilder.BuildDatabaseSchemaFiles(db);
                 }
                 else
@@ -62,9 +67,9 @@ namespace Entities
             }
         }
 
-        private static bool DatabaseCanConnect(string connectionString)
+        private bool DatabaseCanConnect(string connectionString)
         {
-            return SqlUtility.CheckConnection(connectionString);
+            return SqlUtility.CheckConnection(_encryptionService.Decrypt(connectionString));
         }
 
     }

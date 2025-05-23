@@ -4,6 +4,7 @@ using Entities.Interfaces;
 using Entities.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -23,7 +24,8 @@ namespace DbLocalizer.Controllers
         public CommonServiceController(IMemoryCache memoryCache,
             IConfiguration config,
             ISqlSchemaBuilder sqlSchemaBuilder,
-            ILogger<CommonServiceController> logger) : base(memoryCache, config, sqlSchemaBuilder, logger)
+            ILogger<CommonServiceController> logger,
+            IEncryptionService encryptionService) : base(memoryCache, config, sqlSchemaBuilder, logger, encryptionService)
         {
         }
 

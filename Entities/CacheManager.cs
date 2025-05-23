@@ -1,4 +1,6 @@
 ﻿using Entities.Interfaces;
+using Entities.Utilities;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -7,15 +9,17 @@ namespace Entities
 {
     public class CacheManager : ICacheManager
     {
-        private IMemoryCache _memoryCache;
-        private IConfiguration _config;
-        private ISqlSchemaBuilder _sqlSchemaBuilder;
+        private readonly IMemoryCache _memoryCache;
+        private readonly IConfiguration _config;
+        private readonly ISqlSchemaBuilder _sqlSchemaBuilder;
+        private readonly IEncryptionService _encryptionService;
 
-        public CacheManager(IMemoryCache memoryCache, IConfiguration config, ISqlSchemaBuilder sqlSchemaBuilder)
+        public CacheManager(IMemoryCache memoryCache, IConfiguration config, ISqlSchemaBuilder sqlSchemaBuilder, IEncryptionService encryptionService)
         {
             _memoryCache = memoryCache;
             _config = config;
             _sqlSchemaBuilder = sqlSchemaBuilder;
+            _encryptionService = encryptionService;
             BuildCache();
         }
 
@@ -33,7 +37,7 @@ namespace Entities
         {
             if (GetCacheValue("Databases") == null)
             {
-                Databases databases = new Databases(_config, _sqlSchemaBuilder);
+                Databases databases = new Databases(_config, _sqlSchemaBuilder, _encryptionService);
                 if (databases != null || databases.DatabaseCollection != null || databases.DatabaseCollection.Count != 0)
                 {
                     SetCacheValue("Databases", databases);
